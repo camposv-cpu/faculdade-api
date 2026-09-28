@@ -1,35 +1,36 @@
-import {diciplinas}from "../dados/db.js"
+import banco from "../dados/db.js"
+const listar = async (pedido, resposta) => {
+    const [disciplinas] = await banco.query('select * from disciplinas')
+    resposta.json(disciplinas)
+}
 
+const criar = async (pedido, resposta) => {
+    const { matricula, nome, dataNasc, email } = pedido.body
+    const [resultado] = await banco.query("insert into disciplinas (nome,codigo.id_curso)values (?,?,?) ",
+        [matricula, nome, dataNasc, email]
+    )
+    resposta.json({ id: resultado.insertId, matricula, nome, dataNasc, emil })
+}
 
-const listar = ((pedido, resposta) => {
-    resposta.json(diciplinas)
-})
-const criar = ( (pedido, resposta) => {
-    
-    const diciplina = {
-        id:diciplinas.length + 1,
-        nome:pedido.body.nome,
-        codigo:pedido.body.codigo
+const editar = async (pedido, resposta) => {
+    const { id } = pedido.params
+    const [resultado] = await banco.query(
+        "update disciplina det matricula =? , dataNasc=? ,emaill =?",
+        [matricula, nome, dataNasc, email])
+    if (resultado.affectedRows === 0) {
+        resposta.tson({ mensagem: "disciplina não encontrdo!" })
     }
-    diciplinas.push(diciplina)
-    resposta.json(diciplina)
-})
-const editar = ( (pedido,resposta)  => {
-    const index = diciplinas.findIndex(diciplina => diciplina.id == pedido.params.id)
-    if(index == -1) {
-        return resposta.json({mensagem:"diciplina não encontrado!"})
-    }
-    diciplinas[index] = {...diciplinas[index], ...pedido.body}
-    resposta.json(diciplinas[index])
-})
-const deletar = ((pedido, resposta) => {
-    const index = diciplinas.findIndex(diciplina => diciplina.id == pedido.params.id)
-    if (index === -1) {
-        return resposta.json({mensagem:"diciplina não encontrado"})
-    }
-    diciplinas.splice(index,1)
-    resposta.json({mensagem:"diciplina deletado com sucesso"})
+    resposta.json({ mensagem: "disciplina editado com sucesso" })
+}
 
-})
+const deletar = async (pedido ,resposta) => {
+    const {id} =pedido.params
+    const[resultado] = await banco.query('delete from disciplina whwre id =?',[id])
+    if (resultado.affectedRows === 0){
+        resposra.json({ mensagem: "disciplina nao encontrado!"})
+    }
+    resposta.json({mensagem:"disciplina deletar com sucesso!"})
+}
 
-export { listar, criar , editar , deletar }
+
+export { listar,criar,editar,delatar, }
